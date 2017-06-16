@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    
+    <Console name="Console">
+      <PatternLayout pattern="[%d{dd MMM yyyy HH:mm:ss}] %-5p: %c - %m%n" />
+    </Console>
+
+    <File name="File" fileName="logs/client.log">
+      <PatternLayout pattern="[%d{dd MMM yyyy HH:mm:ss}] %-5p: %c - %m%n" />
+    </File>
+
+  </Appenders>
+  <Loggers>
+        <Logger name="client"  level="trace" />
+        <Logger name="tcp"     level="trace" />
+        
+        <Root level="warn">
+          <AppenderRef ref="Console"/>
+          <AppenderRef ref="File"/>
+        </Root>
+  </Loggers>
+</Configuration>
