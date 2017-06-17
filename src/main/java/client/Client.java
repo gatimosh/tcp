@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static tcp.TCPTransport.receive;
 import static tcp.TCPTransport.send;
@@ -16,6 +17,7 @@ public class Client {
 
     private static Logger log = LogManager.getLogger(Client.class);
 
+    private final AtomicInteger counter = new AtomicInteger(0);
     private final SocketAddress address;
 
     public Client(String host, int port) {
@@ -25,7 +27,7 @@ public class Client {
     public Object remoteCall(String serviceName, String methodName, Object[] params) {
         Socket socket = openSocket();
 
-        TaskMsg msg = new TaskMsg(serviceName, methodName, params);
+        TaskMsg msg = new TaskMsg(counter.getAndIncrement(), serviceName, methodName, params);
         log.debug(String.format("call(%d) %s",socket.getLocalPort(), msg));
 
         Object resp = null;

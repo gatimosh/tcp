@@ -22,6 +22,7 @@ package server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tcp.TaskMsg;
+import tcp.TaskRes;
 
 import java.io.*;
 import java.net.Socket;
@@ -42,7 +43,7 @@ public class MsgProcessor implements Runnable {
 
     public void run() {
 
-        TaskMsg msg;
+        TaskMsg msg = null;
 
         try {
             Object  obj = receive(socket);
@@ -54,29 +55,31 @@ public class MsgProcessor implements Runnable {
 
             log.debug(String.format("request(%d) <-- %s", socket.getPort(), msg));
 
-            Object resp = "receive your " + msg;
+            TaskRes resp = new TaskRes(msg.id, "SUCCESS: " + msg);
             send(resp, socket);
 
             log.debug(String.format("respond(%d) --> %s", socket.getPort(), resp));
 
         } catch (Exception e) {
-            log.error("Error while reading request", e);
+            sendFault(msg, e);
         } finally {
             try {
                 log.trace("closing socket " + socket.getPort());
                 socket.close();
             } catch (IOException e) {
-                sendFault(e);
+                sendFault(msg, e);
             }
         }
     }
 
-    private void sendFault(Exception fault) {
-        log.error("Error while processing TCP request", fault);
-        try {
-            // IMPLEMENT ME
-        } catch (Exception e) {
-            log.error("Error while sending the fault response", e);
+    private void sendFault(TaskMsg msg, Exception fault) {
+        log.error("Error while processing request " + msg, fault);
+        if (msg != null) {
+            try {
+                send(new TaskRes(msg.id, TaskRes.Error.INTERNAL), socket);
+            } catch (IOException e) {
+                log.error("Error while sending the fault response", e);
+            }
         }
     }
 }
