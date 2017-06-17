@@ -1,28 +1,25 @@
 package server;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.google.common.base.Preconditions;
 
-
-import config.Gt;
-import org.aeonbits.owner.ConfigFactory;
 import tcp.TCPEndpoint;
 import tcp.TCPServer;
 
 public class Main {
 
-  private static final Logger log = LogManager.getLogger(Main.class);
+  private static final int PORT = 1111;
+  private static final int CORE = 2;
+  private static final int MAX = 64;
+  private static final int KEEP = 10;
+  private static final int QUEUE = 256;
 
   public static void main(String[] args) throws Exception {
 
-    Gt cfg = ConfigFactory.create(Gt.class);
+    int port = args != null && args.length == 1 ? Integer.parseInt(args[0]) : PORT;
 
-    TCPEndpoint endpoint = new TCPEndpoint(cfg.port());
+    WorkerPool pool = new WorkerPool(CORE,MAX, KEEP, QUEUE);
 
-    int queueLength = 200;
-    WorkerPool pool = new WorkerPool(2,4, 10, queueLength);
-
-    TCPServer server = new TCPServer(endpoint, pool);
+    TCPServer server = new TCPServer(new TCPEndpoint(port), pool);
 
     server.start();
   }

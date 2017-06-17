@@ -12,8 +12,8 @@
 
   </Appenders>
   <Loggers>
-        <Logger name="server"  level="trace" />
-        <Logger name="tcp"     level="trace" />
+        <Logger name="server"  level="debug" />
+        <Logger name="tcp"     level="debug" />
         
         <Root level="warn">
           <AppenderRef ref="Console"/>

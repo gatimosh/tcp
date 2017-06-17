@@ -2,14 +2,20 @@ package client;
 
 public class Main {
 
+    private static final String HOST = "localhost";
+    private static final int PORT = 1111;
+
     public static void main(String[] args) {
 
-        sendMsg();
-    }
+        // the only arg is port
+        // 2 args are: 'host port'
+        String host = args != null && args.length == 2 ? args[0] : HOST;
+        int port = PORT;
+        if (args != null && args.length > 0) {
+            port = Integer.parseInt(args.length == 1 ? args[0] : args[1]);
+        }
 
-    private static void sendMsg() {
-
-        Client client = new Client("localhost", 1111);
+        Client client = new Client("localhost", port);
 
         client.remoteCall("service1", "method1", new Object[]{"arg1"});
         client.remoteCall("service1", "method1", new Object[]{"arg1", new Integer(777)});

@@ -13,9 +13,9 @@ Roadmap:
 
 done:
 - use serializable object for data transition
+- read server port from command line argument (get rid of owner lib)
 
 planned:
-- read server port from command line argument (get rid of owner lib)
 - make TaskRes class for result object (including void calls support)
 - add UUI to the task/result objects
 - add TaskRes errors support for responding the errors 
