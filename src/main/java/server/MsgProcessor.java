@@ -21,6 +21,7 @@ package server;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tcp.TaskMsg;
 
 import java.io.*;
 import java.net.Socket;
@@ -41,18 +42,25 @@ public class MsgProcessor implements Runnable {
 
     public void run() {
 
-        String msg = null;
+        TaskMsg msg;
 
         try {
-            msg = receive(socket);
-            log.debug(String.format("request (%d) <-- %s", socket.getPort(), msg));
+            Object  obj = receive(socket);
+            if (!(obj instanceof TaskMsg)) {
+                log.error(String.format("request (%d) brings not a TaskMsg but %s", socket.getPort(), obj));
+                return;
+            }
+            msg = (TaskMsg) obj;
 
-            send("receive your " + msg, socket);
+            log.debug(String.format("request(%d) <-- %s", socket.getPort(), msg));
 
-            log.debug(String.format("response(%d) --> %s", socket.getPort(), "IMPLEMENT ME"));
+            Object resp = "receive your " + msg;
+            send(resp, socket);
+
+            log.debug(String.format("respond(%d) --> %s", socket.getPort(), resp));
 
         } catch (Exception e) {
-            log.error("Error while reading request");
+            log.error("Error while reading request", e);
         } finally {
             try {
                 log.trace("closing socket " + socket.getPort());

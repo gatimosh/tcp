@@ -1,33 +1,21 @@
 package client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
-import java.net.Socket;
-
-import static tcp.TCPTransport.openConnection;
-import static tcp.TCPTransport.receive;
-import static tcp.TCPTransport.send;
-
 public class Main {
 
-    private static Logger log = LogManager.getLogger(Main.class);
+    public static void main(String[] args) {
 
-    public static void main(String[] args) throws IOException {
-
-        sendMsg("test");
+        sendMsg();
     }
 
-    private static void sendMsg(String msg) throws IOException {
+    private static void sendMsg() {
 
-        Socket socket = openConnection("localhost", 1111, -1);
+        Client client = new Client("localhost", 1111);
 
-        log.debug("put " + msg);
-        send(msg, socket);
+        client.remoteCall("service1", "method1", new Object[]{"arg1"});
+        client.remoteCall("service1", "method1", new Object[]{"arg1", new Integer(777)});
+        client.remoteCall("service1", "method1", new Object[]{"arg1", new Double(3.14), "arg3"});
 
-        String resp = receive(socket);
-        log.debug("get " + resp);
+        System.out.println("Client.main is completed");
     }
 
 }
