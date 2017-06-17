@@ -2,3 +2,4 @@ logs/*.log
 *.iml
 *.swp
 .idea/*
+target
