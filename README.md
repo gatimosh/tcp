@@ -1,6 +1,12 @@
 # tcp
 TCP client-server pair
 
+
+Notes:
+
+As soon as we have to use "standard serialization" the custom services must have Serializable args and return types of all methods
+And so the Optional<T> can not be used to manage return value :(
+
 Roadmap:
 
 - push the draft
@@ -17,9 +23,9 @@ done:
 - make TaskRes class for result object (including void calls support)
 - add ID to the task/result objects
 - add TaskRes errors support for responding the errors 
+- add several named services support at server side
 
 planned:
-- add several named services support at server side
 - implement single socket per client approach
   - at server side
   - at client side (shared client)

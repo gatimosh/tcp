@@ -16,23 +16,20 @@ public class TaskRes implements Serializable {
     }
 
     public final Integer id;
-    public final Optional<Object> result;
+    public final boolean isVoid;
+    public final Object result;
     public final Error error;
-
-    public TaskRes(@Nonnull Integer id) {
-        this.id = id;
-        this.result = null;
-        this.error = null;
-    }
 
     public TaskRes(@Nonnull Integer id, @Nullable Optional<Object> result) {
         this.id = id;
-        this.result = result;
+        this.isVoid = result == null;
+        this.result = isVoid ? null : result.orElse(null);
         this.error = null;
     }
 
     public TaskRes(@Nonnull Integer id, Error error) {
         this.id = id;
+        this.isVoid = true;
         this.result = null;
         this.error = error;
     }

@@ -17,10 +17,13 @@ public class Main {
 
         Client client = new Client("localhost", port);
 
-        client.remoteCall("service1", "method1", new Object[]{"arg1"});
-        client.remoteCall("service1", "method1", new Object[]{"arg1", new Integer(777)});
-        client.remoteCall("service1", "method1", new Object[]{"arg1", new Double(3.14), "arg3"});
+        client.remoteCall("Service1", "method1", new Object[]{"arg1"});
+//        client.remoteCall("service1", "method1", new Object[]{"arg1", new Integer(777)});
+//        client.remoteCall("service1", "method1", new Object[]{"arg1", new Double(3.14), "arg3"});
 
+        client.remoteCall("Service1", "getCurrentDate", new Object[0]);
+
+        client.dismiss();
         System.out.println("Client.main is completed");
     }
 

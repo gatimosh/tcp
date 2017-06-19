@@ -19,7 +19,7 @@ public class ServiceFactory {
 
     static {
         Properties props = new Properties();
-        try (InputStream in = ServiceFactory.class.getResourceAsStream("server.properties")) {
+        try (InputStream in = ServiceFactory.class.getResourceAsStream("/server.properties")) {
             props.load(in);
             in.close();
         } catch (IOException e) {

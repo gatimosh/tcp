@@ -20,17 +20,19 @@ public class Client {
     private final AtomicInteger counter = new AtomicInteger(0);
     private final SocketAddress address;
 
+    private volatile Socket socket;
+
     public Client(String host, int port) {
         address = new InetSocketAddress(host, port);
     }
 
     public Object remoteCall(String serviceName, String methodName, Object[] params) {
-        Socket socket = openSocket();
+        Socket socket = getSocket();
 
         TaskMsg msg = new TaskMsg(counter.getAndIncrement(), serviceName, methodName, params);
         log.debug(String.format("call(%d) %s",socket.getLocalPort(), msg));
 
-        Object resp = null;
+        Object resp;
         try {
             send(msg, socket);
             resp = receive(socket);
@@ -44,13 +46,33 @@ public class Client {
         return resp;
     }
 
-    private Socket openSocket() {
-        try {
-            Socket socket = new Socket();
-            socket.connect(address);
-            return socket;
-        } catch (Exception e) {
-            throw new RuntimeException("Error while opening TCP connection to " + address, e);
+    private Socket getSocket() {
+        if (socket == null) {
+            initSocket();
         }
+        return socket;
+    }
+
+    private synchronized void initSocket() {
+        if (socket == null) {
+            try {
+                Socket s = new Socket();
+                s.connect(address);
+                socket = s;
+            } catch (Exception e) {
+                throw new RuntimeException("Error while opening TCP connection to " + address, e);
+            }
+        }
+    }
+
+    public synchronized void dismiss() {
+        if (socket != null && !socket.isClosed()) {
+            try {
+                getSocket().close();
+            } catch (IOException e) {
+                log.error("Error while closing socket: ", e);
+            }
+        }
+        socket = null;
     }
 }

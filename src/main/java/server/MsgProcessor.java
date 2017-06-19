@@ -47,7 +47,7 @@ public class MsgProcessor implements Runnable {
 
     public void run() {
 
-        while(!socket.isInputShutdown()) {
+        while(!socket.isClosed() && socket.isConnected() && !socket.isInputShutdown()) {
             TaskMsg msg = null;
 
             try {
@@ -58,17 +58,14 @@ public class MsgProcessor implements Runnable {
                 }
                 msg = (TaskMsg) obj;
                 dispatchMsg(msg);
-
-
             } catch (Exception e) {
-                sendFault(msg, e);
-            } finally {
+                log.error("Error while receiving request, closing socket.");
                 try {
-                    log.trace("closing socket " + socket.getPort());
                     socket.close();
-                } catch (IOException e) {
-                    sendFault(msg, e);
+                } catch (IOException e1) {
+                    log.error("Error while closing socket: ", e1);
                 }
+                return;
             }
         }
     }
