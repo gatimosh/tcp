@@ -3,16 +3,20 @@ package tcp;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.Optional;
 
 public class TaskRes implements Serializable {
 
     public enum Error {
         OK,
-        INTERNAL
+        INTERNAL,
+        SERVICE_NOT_FOUND,
+        METHOD_NOT_FOUND,
+        METHOD_EXECUTION_ERROR
     }
 
     public final Integer id;
-    public final Object result;
+    public final Optional<Object> result;
     public final Error error;
 
     public TaskRes(@Nonnull Integer id) {
@@ -21,7 +25,7 @@ public class TaskRes implements Serializable {
         this.error = null;
     }
 
-    public TaskRes(@Nonnull Integer id, @Nullable Object result) {
+    public TaskRes(@Nonnull Integer id, @Nullable Optional<Object> result) {
         this.id = id;
         this.result = result;
         this.error = null;
