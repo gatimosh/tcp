@@ -24,9 +24,10 @@ done:
 - add ID to the task/result objects
 - add TaskRes errors support for responding the errors 
 - add several named services support at server side
+- implement single socket per client approach
+  - at client side (shared client)
 
 planned:
 - implement single socket per client approach
   - at server side
-  - at client side (shared client)
-
+- split Client.Main into number of tests

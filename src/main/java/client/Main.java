@@ -23,8 +23,14 @@ public class Main {
 
         client.remoteCall("Service1", "getCurrentDate", new Object[0]);
 
-        client.dismiss();
-        System.out.println("Client.main is completed");
+        // multithread client usage
+
+        for(int i = 0; i < 10; i++) {
+            new Thread(() -> client.remoteCall("Service1", "getCurrentDate", new Object[0])).start();
+        }
+
+//        client.dismiss();
+//        System.out.println("Client.main is completed");
     }
 
 }
