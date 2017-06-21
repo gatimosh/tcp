@@ -39,6 +39,7 @@ public class MsgProcessor implements Runnable {
     private static final Logger log = LogManager.getLogger(MsgProcessor.class);
 
     private Socket socket;
+    private WorkerPool pool;
 
     public MsgProcessor(Socket socket) {
         log.trace("get socket " + socket.getPort());
@@ -47,8 +48,10 @@ public class MsgProcessor implements Runnable {
 
     public void run() {
 
+        pool = new WorkerPool(1, 16, 10, 64);
+
         while(!socket.isClosed() && socket.isConnected() && !socket.isInputShutdown()) {
-            TaskMsg msg = null;
+            final TaskMsg msg;
 
             try {
                 Object obj = receive(socket);
@@ -57,7 +60,6 @@ public class MsgProcessor implements Runnable {
                     return;
                 }
                 msg = (TaskMsg) obj;
-                dispatchMsg(msg);
             } catch (Exception e) {
                 log.error("Error while receiving request, closing socket.");
                 try {
@@ -67,10 +69,18 @@ public class MsgProcessor implements Runnable {
                 }
                 return;
             }
+
+            pool.execute(() -> dispatchMsg(msg));
+        }
+
+        try {
+            pool.shutdown(10);
+        } catch (InterruptedException e) {
+            log.error("Error during shutting down thread pool: ", e.getMessage());
         }
     }
 
-    private void dispatchMsg(@Nonnull TaskMsg msg) throws IOException {
+    private void dispatchMsg(@Nonnull TaskMsg msg) {
 
         log.debug(String.format("request(%d) <-- %s", socket.getPort(), msg));
 
@@ -96,7 +106,10 @@ public class MsgProcessor implements Runnable {
     private void respond(TaskRes res) {
         try {
             log.debug(String.format("respond(%d) --> %s", socket.getPort(), res));
-            send(res, socket);
+            // this is actually an out-stream lock, as MsgProcessor is the only reader of input-stream
+            synchronized(socket) {
+                send(res, socket);
+            }
         } catch (IOException e) {
             log.error(String.format("Error while sending the response[%s]", res), e);
         }
